@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify
+from reportlab.pdfgen.canvas import Canvas
 
 app = Flask(__name__)
 
@@ -23,6 +24,18 @@ def process_form():
     print(json_answers)
 
     return f"Answers collected: {answers}"
+
+
+def generate_pdf(user_response):
+    canvas = Canvas('user_response.pdf')
+    horizontal = vertical = 72
+    for qn, ans in user_response:
+        if ans == 'yes':
+            canvas.drawString(horizontal, vertical, f"${qn} - ${ans}")
+            vertical -= 1
+    canvas.save()
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
