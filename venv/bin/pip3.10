@@ -1,4 +1,4 @@
-#!/Users/new/Desktop/Upwork/pdf-generator/.venv/bin/python3
+#!/Users/new/Desktop/Upwork/pdf-generator/venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys
