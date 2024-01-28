@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request, jsonify
+import random
+from flask import Flask, render_template, request, jsonify, redirect, url_for, send_from_directory
+from reportlab.pdfgen.canvas import Canvas
 
 app = Flask(__name__)
 
@@ -18,11 +20,32 @@ def process_form():
 
     # You can now use 'answers' as a list of dictionaries containing question and answer pairs
     # Convert answers to JSON format if needed
-    print(answers)
-    json_answers = jsonify(answers)
-    print(json_answers)
+    file_directory = generate_pdf(answers)
+    # return f"Answers collected: {answers}"
+    return redirect(url_for('pdfviewer', directory=file_directory))
 
-    return f"Answers collected: {answers}"
+@app.route('/<directory>')
+def pdfviewer(directory):
+    path = app.root_path
+    return send_from_directory(path,directory,mimetype='application/pdf')
+
+def generate_pdf(user_response):
+    name_int = random.randint(1, 1000000) 
+    name = f"{name_int}.pdf"
+    canvas = Canvas(name)
+    horizontal, vertical = 72, 800
+    for data in user_response:
+        qn, ans = data['questionnumber'], data['answer']
+        if ans == 'yes':
+            canvas.drawString(horizontal, vertical, f"{qn} - {ans}")
+            vertical -= 18
+        if vertical < 20:
+            canvas.showPage()
+    canvas.showPage()
+    canvas.save()
+    return name
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
